@@ -1,0 +1,44 @@
+﻿@model IEnumerable<ElectricStore.Models.Models.Product>
+@{
+    ViewData["Title"] = "GetCategory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row p-5">
+    <div class="col-3">
+        @await Component.InvokeAsync("Category")
+    </div>
+    <div class="col-9">
+        @foreach (var item in Model)
+        {
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="row p-2">
+                    <div class="col-12 text-center  p-1" style="border:1px solid #008cba; border-radius: 5px;">
+                        <div class="card" style="border:0px;">
+                            <img src="@item.ImageUrl" class="card-img-top rounded" />
+                            <div class="pl-1">
+                                <p class="card-title h5"><b style="color:#2c3e50">@item.Name</b></p>
+                                <p class="card-title text-primary">by <b>@item.Code</b></p>
+                            </div>
+                            <div style="padding-left:5px;">
+                                <p>List Price: <strike><b class="">$@item.Price</b></strike></p>
+                            </div>
+                            <div style="padding-left:5px;">
+                                <p style="color:maroon">As low as: <b class="">$@item.DiscountPrice</b></p>
+                            </div>
+                        </div>
+                        <div>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary form-control text-center">Detials</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        }
+    </div>
+
+</div>
+
+

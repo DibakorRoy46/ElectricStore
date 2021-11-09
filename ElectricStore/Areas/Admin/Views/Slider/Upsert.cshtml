@@ -1,0 +1,80 @@
+﻿@model ElectricStore.Models.Models.ImageSlider
+@{
+    var title = "Create Slider";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<form method="post" enctype="multipart/form-data">
+    <div class="row p-3 border">
+        <div class="col-12 border-bottom">
+            @if (Model.Id != 0)
+            {
+                title = "Edit Slider";
+                <input asp-for="Id" hidden />
+            }
+            <h2 class="text-primary">@title</h2>
+        </div>
+        <div class="col-8 pt-4">
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="Name"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="ImageUrl"></label>
+                </div>
+                <div class="col-8">
+                    <input type="file" name="files" multiple class="form-control" id="uploadBox" />
+                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-8 offset-4">
+                    @if (Model.Id != 0)
+                    {
+                        <partial name="_EditAndBackToList" model="@Model" />
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="col">
+                                <input type="submit" class="btn btn-primary form-control" onclick="return validateInput()" value="Create" />
+
+                            </div>
+                            <div class="col">
+                                <a class="btn btn-success form-control" asp-action="Index">Back to List</a>
+
+                            </div>
+
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        @if (Model.Id != 0)
+        {
+            <div class="p-2">
+                <img src="@Model.ImageUrl" width="250" height="250" style="border:1px solid #00ff90" />
+            </div>
+        }
+    </div>
+</form>
+
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+  
+        function validateInput() {
+            if (document.getElementById("uploadBox").value == "") {
+                swal("Error", "Please select an image", "error");
+                return false;
+            }
+            return true;
+        };
+    </script>
+}

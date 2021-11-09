@@ -1,0 +1,67 @@
+﻿@model IEnumerable<ElectricStore.Models.Models.Product>
+@{
+    ViewData["Title"] = "GetCategory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row p-5">
+    <div class="col-3">
+        @await Component.InvokeAsync("Category")
+    </div>
+    <div class="col-9">
+        <div class="container mydiv">
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                   <div  class="col-4" >
+                       <figure class="card card-product" >
+                           <div class="img-wrap"><img src="@item.ImageUrl" height="250" width="100%"></div>
+                           <figcaption class="info-wrap">
+                               
+                               <a class="title h4" asp-controller="Home"asp-action="Details" asp-route-id="@item.Id">@item.Name</a>
+                               
+                               <div class="rating-wrap">
+
+                                   @if (item.Quantity != 0)
+                                   {
+                                       <div class="label-rating">In Stock </div>
+                                   }
+                                   else
+                                   {
+                                       <div class="label-rating">Out of Stock </div>
+                                   }
+
+                               </div> <!-- rating-wrap.// -->
+                           </figcaption>
+                           <div class="bottom-wrap">
+                               <a asp-controller="Home" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary float-right">View Details</a>
+                              
+                               <div class="price-wrap h5">
+                                   @if (item.DiscountPrice != 0)
+                                   {
+                                       <span class="price-new">$@item.DiscountPrice</span> <del class="price-old">$@item.Price</del>
+                                   }
+                                   else
+                                   {
+                                       <span class="price-new">$@item.Price</span>
+                                   }
+
+                               </div> 
+                           </div> 
+                       </figure>
+
+                   </div>
+
+                    
+
+
+                }
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+

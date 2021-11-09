@@ -1,0 +1,9 @@
+﻿@model IEnumerable<ElectricStore.Models.Models.Category>
+<ul class="list-group">
+    <li class="list-group-item active">Category</li>
+    <li class="list-group-item "><a asp-controller="Shop" asp-action="Index">All</a></li>
+    @foreach (var item in Model)
+    {
+        <li class="list-group-item"><a asp-controller="Shop" asp-action="Index" asp-route-id="@item.Id">@item.Name</a></li>
+    }
+</ul>
