@@ -22,12 +22,13 @@ namespace ElectricStore.Areas.Admin.Controllers
             _roleManager = roleManager;
             _db = db;
         }
+        [Route("Role")]
         public async Task<IActionResult> Index()
-        {
-           
+        {         
             return View();
         }
         [HttpGet]
+        [Route("Role/Upsert")]
         public IActionResult Upsert(string id)
         {
             if (String.IsNullOrEmpty(id))
@@ -45,7 +46,7 @@ namespace ElectricStore.Areas.Admin.Controllers
         }
 
         [HttpPost]
-       
+        [Route("Role/Upsert")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upsert(IdentityRole roleObj)
         {

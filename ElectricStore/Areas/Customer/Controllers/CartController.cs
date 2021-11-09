@@ -2,6 +2,7 @@
 using ElectricStore.Models.Models;
 using ElectricStore.Models.ViewModels;
 using ElectricStore.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -16,6 +17,7 @@ using System.Threading.Tasks;
 namespace ElectricStore.Areas.Customer.Controllers
 {
     [Area("Customer")]
+    [Authorize]
     public class CartController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -30,6 +32,7 @@ namespace ElectricStore.Areas.Customer.Controllers
             _userManager = userManager;
             _emailSender = emailSender;
         }
+        
         public async Task<IActionResult> Index()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;

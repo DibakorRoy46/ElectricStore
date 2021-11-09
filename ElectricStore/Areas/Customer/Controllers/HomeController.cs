@@ -30,6 +30,7 @@ namespace ElectricStore.Controllers
             _unitOfWork = unitOfWork;
             _db = db;
         }
+        [Route("")]
         public async Task<IActionResult> Index()
         {
 

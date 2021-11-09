@@ -95,10 +95,7 @@ namespace ElectricStore.Areas.Identity.Pages.Account
                     UserName = Input.Email,
                     Email = Input.Email,
                     Name=Input.Name
-                    
-                    
-                    
-                   
+                                                      
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)

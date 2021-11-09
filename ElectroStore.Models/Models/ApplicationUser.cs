@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -18,7 +19,11 @@ namespace ElectricStore.Models.Models
         public string City { get; set; }
         public string PostalCode { get; set; }
         [NotMapped]
-        public string Role { get; set; }
-        
+        public IEnumerable<string> RoleId { get; set; }
+        [NotMapped]
+        public IEnumerable<string> Role { get; set; }
+        [NotMapped]
+        public IEnumerable<SelectListItem> RoleList { get; set; }
+
     }
 }

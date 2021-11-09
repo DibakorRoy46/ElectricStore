@@ -2,11 +2,14 @@ using ElectricStore.Data;
 using ElectricStore.DataAccess.IRepository;
 using ElectricStore.DataAccess.Repository;
 using ElectricStore.Utility;
+using ElectricStore.Utility.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,13 +43,31 @@ namespace ElectricStore
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IEmailSender, EmailSender>();
             services.AddRazorPages();
+            services.Configure<IdentityOptions>(opt =>
+            {
+                opt.Password.RequiredLength = 6;
+                opt.Password.RequireLowercase = true;
+                opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(30);
+                opt.Lockout.MaxFailedAccessAttempts = 3;
+                opt.User.RequireUniqueEmail = true;           
+                opt.SignIn.RequireConfirmedEmail = true;
+                
+
+            });
+            services.ConfigureApplicationCookie(options =>
+            {
+                //options.LoginPath = $"/Admin/Account/Login";
+                //options.LogoutPath = $"/Admin/Account/Logout";
+                options.AccessDeniedPath = new PathString("/AccessDenied");
+            });
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
-
+                
             });
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
         }

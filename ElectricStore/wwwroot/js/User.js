@@ -12,9 +12,9 @@ function loadDataTable() {
             "url": "/Admin/User/GetAll/"
         },
         "columns": [
-            { "data": "name", "width": "12%" },
-            { "data": "email", "width": "12%" },          
-            { "data": "role", "width": "10%" },         
+            { "data": "name", "width": "15%" },
+            { "data": "email", "width": "15%" },          
+            { "data": "role", "width": "15%" },         
             {
                 "data": {
                     id: "id", lockoutEnd: "lockoutEnd"
@@ -32,8 +32,16 @@ function loadDataTable() {
                                     <a class="btn btn-success" onclick=LockUnlocked('${data.id}')><i class="fas fa-lock"></i> Lock</a>
                             </div>`;
                     }
-                },"width":"14%"
+                },"width":"15%"
             },
+            {
+                "data": "id",
+                "render": function (data) {
+                    return `<div class="text-center">                             
+                                <a class="btn btn-danger" onclick=Delete("/Admin/User/Delete/${data}") style="cursor:pointer;"><i class="fas fa-trash-alt"></i></a>
+                            </div>`;
+                }, "width": "40%"
+            }
         ]
 
 
