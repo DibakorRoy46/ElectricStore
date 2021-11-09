@@ -1,0 +1,92 @@
+﻿@model ElectricStore.Models.ViewModels.ShopVM
+@using ElectricStore.Models.ViewModels
+
+
+<div class="container mydiv">
+    <div class="row" id="bookList">
+        @foreach (var item in Model.ProductList)
+        {
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="row p-2">
+                <div class="col-12  p-1" style="border:1px solid #008cba; border-radius: 5px;">
+                    <div class="card" style="border:0px;">
+                        <img src="@item.ImageUrl" class="card-img-top rounded" />
+                        <div class="pl-1">
+                            <p class="card-title h5"><b style="color:#2c3e50">@item.Name</b></p>
+                            <p class="card-title text-primary">by <b>@item.Brand.Name</b></p>
+                        </div>
+                        <div style="padding-left:5px;">
+                            <p>List Price: <strike><b class="">@item.Price</b></strike></p>
+                        </div>
+                        @if (item.DiscountPrice != 0 && item.DiscountPrice != null)
+                        {
+                            <div style="padding-left:5px;">
+                                <p style="color:maroon">As low as: <b class="">@item.DiscountPrice</b></p>
+                            </div>
+                        }
+                        <div style="padding-left:5px;">
+                            <p style="color:maroon">As low as: <b class="">@item.Price</b></p>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <a asp-controller="Home" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary form-control">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>      
+        }
+    </div>
+</div>
+<br />
+<div>
+    @if (Model.Pager != null && Model.Pager.TotalPages > 1)
+    {
+        <ul class="pagination">
+            @if (Model.Pager.CurrentPage > 1)
+            {
+                <li class="prev page-item " style="cursor:pointer;">
+                    <a data-href="@Url.Action("ProductList", "Shop", new { pageNo = Model.Pager.CurrentPage - 1, sortBy = Model.SortById, categoryID = Model.CategoryId })" class="pageDataLink page-link"><i class="fa fa-angle-left"></i></a>
+                </li>
+            }
+
+            @for (var page = Model.Pager.StartPage; page <= Model.Pager.EndPage; page++)
+            {
+                string activeClass = Model.Pager.CurrentPage == page ? "active bg-info" : string.Empty;
+
+                <li style="cursor:pointer;" class="@activeClass pointer-event  page-item"><a data-href="@Url.Action("ProductList", "Shop", new { pageNo = page, sortBy = Model.SortById, categoryID = Model.CategoryId })" class="pageDataLink page-link">@(page)</a></li>
+            }
+
+            @if (Model.Pager.CurrentPage < Model.Pager.TotalPages)
+            {
+                <li style="cursor:pointer;" class="page-item pointer-event "><a data-href="@Url.Action("ProductList", "Shop", new { pageNo = Model.Pager.CurrentPage + 1, sortBy = Model.SortById, categoryID = Model.CategoryId})" class="pageDataLink page-link"><i class="fa fa-angle-right"></i></a></li>
+            }
+        </ul>
+    }
+</div>
+
+
+<input hidden id="SearchTerm" value="@Model.Search" />
+
+<input hidden id="SortBy" value="@Model.SortById" />
+
+<input hidden id="CategoryID" value="@Model.CategoryId" />
+<input hidden id="CategoryID" value="@Model.BrandId" />
+
+
+<script>
+    $(document).ready(function () {
+        $(".pageDataLink").click(function () {
+            var url = $(this).attr("data-href");
+
+            console.log(url);
+
+            if (url != "" || url != undefined) {
+                GetData(url);
+            }
+        });
+    });
+
+</script>
+
+
+

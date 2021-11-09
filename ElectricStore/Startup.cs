@@ -1,4 +1,5 @@
 using ElectricStore.Data;
+using ElectricStore.Data.Initializer;
 using ElectricStore.DataAccess.IRepository;
 using ElectricStore.DataAccess.Repository;
 using ElectricStore.Utility;
@@ -44,6 +45,7 @@ namespace ElectricStore
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddRazorPages();
             services.Configure<IdentityOptions>(opt =>
             {
@@ -73,7 +75,7 @@ namespace ElectricStore
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDbInitializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -95,6 +97,7 @@ namespace ElectricStore
 
             app.UseAuthentication();
             app.UseAuthorization();
+            dbInitializer.Initialize();
 
             app.UseEndpoints(endpoints =>
             {

@@ -1,67 +1,248 @@
-﻿@model IEnumerable<ElectricStore.Models.Models.Product>
+﻿@using ElectricStore.Models.ViewModels
+@model ElectricStore.Models.ViewModels.ShopIndexVM
+@using ElectricStore.DataAccess.Data
+
 @{
-    ViewData["Title"] = "GetCategory";
+    ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="row p-5">
-    <div class="col-3">
-        @await Component.InvokeAsync("Category")
-    </div>
-    <div class="col-9">
-        <div class="container mydiv">
+<div class="container">
+    <h1 class="text-center border-bottom">Shop</h1>
+
+
+    <br />
+    <div class="row">
+        <div class="col-4 p-2">
             <div class="row">
-                @foreach (var item in Model)
-                {
-                   <div  class="col-4" >
-                       <figure class="card card-product" >
-                           <div class="img-wrap"><img src="@item.ImageUrl" height="250" width="100%"></div>
-                           <figcaption class="info-wrap">
-                               
-                               <a class="title h4" asp-controller="Home"asp-action="Details" asp-route-id="@item.Id">@item.Name</a>
-                               
-                               <div class="rating-wrap">
+                <div class="col-12">
+                    <input class="form-control" id="search" value="@Model.Search" placeholder="Search.." />
+                </div>
+                <div class="col-12 my-2" id="sort">
+                    <h3>Sort By</h3>
+                    <ul class="list-group">
+                        <li class="list-group-item sortBy " style="cursor:pointer;"><a data-href="@Url.Action("ProductList", "Shop", new { sortBy = (int)SortByEnum.Default})" class="dataLink">Default - Newest</a></li>
+                        <li class="list-group-item sortBy " style="cursor:pointer;"><a data-href="@Url.Action("ProductList", "Shop", new { sortBy = (int)SortByEnum.Popularity  })" class="dataLink">Popularity</a></li>
+                        <li class="list-group-item sortBy " style="cursor:pointer;"><a data-href="@Url.Action("ProductList", "Shop", new { sortBy = (int)SortByEnum.LowtoHighPrice})" class="dataLink">Price: low to high</a></li>
+                        <li class="list-group-item  sortBy" style="cursor:pointer;"><a data-href="@Url.Action("ProductList", "Shop", new { sortBy = (int)SortByEnum.HightoLowPrice  })" class="dataLink">Price: high to low</a></li>
+                    </ul>
+                </div>
 
-                                   @if (item.Quantity != 0)
-                                   {
-                                       <div class="label-rating">In Stock </div>
-                                   }
-                                   else
-                                   {
-                                       <div class="label-rating">Out of Stock </div>
-                                   }
-
-                               </div> <!-- rating-wrap.// -->
-                           </figcaption>
-                           <div class="bottom-wrap">
-                               <a asp-controller="Home" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary float-right">View Details</a>
-                              
-                               <div class="price-wrap h5">
-                                   @if (item.DiscountPrice != 0)
-                                   {
-                                       <span class="price-new">$@item.DiscountPrice</span> <del class="price-old">$@item.Price</del>
-                                   }
-                                   else
-                                   {
-                                       <span class="price-new">$@item.Price</span>
-                                   }
-
-                               </div> 
-                           </div> 
-                       </figure>
-
-                   </div>
-
-                    
-
-
-                }
+                <div class="col-12 my-2">
+                    <h3>Category</h3>
+                    <div class="tag-list" id="category">
+                        <ul class="list-group">
+                            <li class="list-group-item categoryId" style="cursor:pointer;">
+                                <a data-href="@Url.Action("ProductList", "Shop", new { categoryID = 0})" class="categorydataLink @((int)Model.CategoryId == 0 ? "active" : string.Empty)">All</a>
+                            </li>
+                            @foreach (var category in Model.CategoryList)
+                            {
+                                <li class="list-group-item categoryId" style="cursor:pointer;">
+                                    <a data-href="@Url.Action("ProductList", "Shop", new { categoryID = category.Id})" class="categorydataLink @((int)Model.CategoryId == category.Id ? "active" : string.Empty)">@category.Name</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-12 my-2">
+                    <h3>Brand</h3>
+                    <div class="tag-list" id="brand">
+                        <ul class="list-group">
+                            <li class="list-group-item brandId" style="cursor:pointer;">
+                                <a data-href="@Url.Action("ProductList", "Shop", new { brandId = 0})" class="branddataLink @((int)Model.BrandId == 0 ? "active" : string.Empty)">All</a>
+                            </li>
+                            @foreach (var brand in Model.BrandList)
+                            {
+                                <li class="list-group-item brandId" style="cursor:pointer;">
+                                    <a data-href="@Url.Action("ProductList", "Shop", new { brandId = brand.Id})" class="branddataLink @((int)Model.BrandId == brand.Id ? "active" : string.Empty)">@brand.Name</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="widget widget-price col-12 my-2">
+                    <h5 class="widget-title">Filter by price</h5>
+                    <div class="price-filter">
+                        <div id="slide-range"></div>
+                        <p class="amount">
+                            Price: <input type="text"  id="amount" disabled="">
+                        </p>
+                    </div>
+                </div>
 
             </div>
+
         </div>
-
+        <div class="col-8" id="container">
+            @{
+                ShopVM shopVM = new ShopVM()
+                {
+                    ProductList = Model.ProductList,
+                    Pager = Model.Pager,
+                    CategoryId = Model.CategoryId,
+                    BrandId=Model.BrandId,
+                    SortById = Model.SortById,
+                    MaximumPrice = Model.MaximumPrice,
+                    MinimumPrice = Model.MinimumPrice,
+                    Search = Model.Search
+                };
+                <partial name="ProductList" model="shopVM" />
+            }
+            <label id="text"></label>
+            <label id="text1"></label>
+        </div>
     </div>
-
 </div>
 
+@section Scripts{
+    <script>
+
+        $('#sort li').click(function (e) {
+                $(this).addClass('active').siblings().removeClass('active');
+        });
+        $('#category li').click(function (e) {
+            $(this).addClass('active').siblings().removeClass('active');
+        });
+        $('#brand li').click(function (e) {
+            $(this).addClass('active').siblings().removeClass('active');
+        });
+
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#search").keyup(function () {
+                $.ajax({
+                    url: '@Url.Action("ProductList", "Shop")',
+                    data: {
+                        search: $("#search").val(),
+                        sortBy: $("#SortBy").val(),
+                        categoryID: $("#CategoryId").val(),
+                        brandId: $("#brandId").val(),
+                        minimumPrice: priceSlider.slider("values", 0),
+                        maximumPrice: priceSlider.slider("values", 1),
+                    }
+                })
+                    .done(function (response) {
+                        $("#container").html(response);
+                    })
+                    .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("FAIL");
+                    });
+            });
+            $("#resetBtn").click(function () {
+                var searchValue = "";
+                $("#search").val('');
+                $.ajax({
+                    url: '@Url.Action("CategoryTable", "Category")',
+                    data: {
+                        search: searchValue
+                    }
+                })
+                    .done(function (response) {
+                        $("#container").html(response);
+                    })
+                    .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("FAIL");
+                    });
+            });
+          });
+    </script>
+    <script>
+
+	var callTimeout;
+	var priceSlider = $("#slide-range").slider({
+		range: true,
+		min: 0,
+		max: '@Model.MaximumPrice',
+		values: [0, @Model.MaximumPrice],
+		slide: function (event, ui) {
+			var minPrice = ui.values[0];
+			var maxPrice = ui.values[1];
+
+			$("#amount").val("$" + minPrice + ".00" + " - " + "$" + maxPrice + ".00");
+
+			clearTimeout(callTimeout);
+			callTimeout = setTimeout(PriceRangeChange, 500);
+		}
+	});
+
+        $(".dataLink").click(function () {
+
+        var url = $(this).attr("data-href");
+        console.log(url);
+
+
+
+		if (url != "" || url != undefined) {
+			GetData(url);
+		}
+        });
+
+        $(".categorydataLink").click(function () {
+
+            var url = $(this).attr("data-href");
+
+            console.log(url);
+            if (url != "" || url != undefined) {
+                GetData(url);
+            }
+        });
+        $(".branddataLink").click(function () {
+
+            var url = $(this).attr("data-href");
+
+            console.log(url);
+            if (url != "" || url != undefined) {
+                GetData(url);
+            }
+        });
+
+	function GetData(dUrl){
+		console.log("getdata in");
+
+
+		$.ajax({
+			url: dUrl,
+            data: {
+                search: $("#SearchTerm").val(),
+                sortBy: $("#SortBy").val(),
+                categoryID: $("#CategoryID").val(),
+
+				minimumPrice : priceSlider.slider("values", 0),
+                maximumPrice: priceSlider.slider("values", 1),
+			}
+		})
+        .done(function (response) {
+        	console.log("done");
+        	$("#container").html(response);
+        })
+        .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+        	console.log("fail");
+        	alert("FAIL");
+        })
+    };
+	function PriceRangeChange(){
+		$.ajax({
+			url: '@Url.Action("ProductList", "Shop")',
+			data: {
+				search: $("#SearchTerm").val(),
+                sortBy: $("#SortBy").val(),
+                brandId: $("#brandId").val(),
+				categoryID: $("#CategoryID").val(),
+				minimumPrice : priceSlider.slider("values", 0),
+				maximumPrice : priceSlider.slider("values", 1)
+			}
+		})
+        .done(function (response) {
+            $("#container").html(response);
+            console.log("Get");
+        })
+        .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+        	alert("FAIL");
+        });
+    };
+    </script>
+}
 
